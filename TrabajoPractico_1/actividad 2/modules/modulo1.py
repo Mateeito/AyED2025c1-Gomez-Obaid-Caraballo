@@ -1,7 +1,28 @@
-# módulo para organizar funciones o clases utilizadas en nuestro proyecto
-# Crear tantos módulos como sea necesario para organizar el código
+
+class Nodo:
+    def __init__(self, datoInicial):
+        self.dato = datoInicial
+        self.siguiente = None
+    
+    def obtenerDato(self):
+        return self.dato
+    
+    def obtenerSiguiente(self):
+        return self.siguiente
+    
+    def asignarDato(self,nuevoDato):
+        self.dato = nuevoDato
+
+    def asignarSiguiente(self, nuevodatoSig):
+        self.siguiente = nuevodatoSig
 
 
+class ListaNoOrdenada:
+    def __init__(self):
+        self.cabeza = None
+
+    def estaVacia(self):
+        return self.cabeza == None
 
 
 
