@@ -1,3 +1,8 @@
+import time
+import random
+
+
+
 
 def ordenamiento_burbuja(lista):           
     n = len(lista)                        
@@ -65,6 +70,24 @@ def ordenamiento_por_residuos(lista):
         exponente *= 10                         # Multiplica el exponente por 10 despues de cada llamada a la funcion counting_sort
     return lista
 
+
+#A PARTIR DE ACA VOY A RESOLVER LA ACTIVIDAD 2, DESPUES VERE EN QUE CARPETA LO METO
+
+def medir_tiempo(algoritmo, lista):
+    tiempo_inicial = time.time()            #aca establecemos el tiempo en t=0
+    algoritmo(lista)                        #aca llamamos al algoritmo en cuestion al que queremos tomarle el tiempo y le enviamos la lista
+    tiempo_final = time.time()              #aca dejamos de correr el tiempo, ya que la funcion ya actuo
+    tiempo_transcurrido = tiempo_final-tiempo_inicial
+    return tiempo_transcurrido              #finalmente, nos devuelve el tiempo que tardo en total
+
+
+tamanios_listas = [1, 10, 100, 500, 1000]   #estos son los tamaños de lista que queremos medir, listas con 1, 10, 100, 500 y 1000 elementos
+tiempos_ordenamiento_burbuja = []   
+tiempos_ordenamiento_quicksort = []         #en estas tres listas almacenamos los tiempos corres´pondientes a cada uno de los tamaños (es decir que las listas van a tener 5 elementos c/u)
+tiempos_ordenamiento_radixsort = []
+
+for i in tamanios_listas:
+    lista_aleatoria = []
 
 
 
