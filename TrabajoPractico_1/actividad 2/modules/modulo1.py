@@ -1,8 +1,8 @@
 
 class Nodo:
-    def __init__(self, datoInicial):
-        self.dato = datoInicial
-        self.siguiente = None
+    def __init__(self, dato):
+        self.dato = dato
+        self.siguiente = None       
     
     def obtenerDato(self):
         return self.dato
@@ -20,18 +20,21 @@ class Nodo:
 class ListaNoOrdenada:
     def __init__(self):
         self.cabeza = None
-
+        self.tamanio = tamanio
+  
     def estaVacia(self):
         return self.cabeza == None
 
+    def __len__(self):
+        return self.tamanio
+
+    def agregarDato(self, dato):
+        datoActual = self.cabeza
+
+"""
 
 
-
-def esta_vacia():
-    pass
-
-def __len__():
-    pass
+  
 
 def agregar_al_inicio(item):
     pass
@@ -56,3 +59,4 @@ def concatenar(lista):
 
 def __add__(lista):
     pass
+"""
