@@ -189,8 +189,8 @@ def medir_tiempo(func, *args):
     func(*args)                         #ejecuta la funcion que se le pase como argumento
     return time.time() - inicio         #
 
-n_valores = list(range(100, 2100, 200))
-tiempos_len = []
+n_valores = list(range(100, 2100, 50))  #genera una lista de enteros que empieza en 100, llega hasta el numero 2100 (sin incluirlo) y aumenta de a 200
+tiempos_len = []                        #crea una lista para guardar los diferentes tiempos de la funcion len
 tiempos_copiar = []
 tiempos_invertir = []
 
@@ -204,7 +204,7 @@ for n in n_valores:
     tiempos_invertir.append(medir_tiempo(lista.invertir))
 
 # Graficar resultados
-pyplo.plot(n_valores, tiempos_len, label='len()')
+pyplo.plot(n_valores, tiempos_len, label='len()')               
 pyplo.plot(n_valores, tiempos_copiar, label='copiar()')
 pyplo.plot(n_valores, tiempos_invertir, label='invertir()')
 pyplo.xlabel('Cantidad de elementos (N)')

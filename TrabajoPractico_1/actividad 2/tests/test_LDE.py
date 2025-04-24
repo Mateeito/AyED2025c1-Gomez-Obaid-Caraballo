@@ -163,7 +163,7 @@ class Test_LDE(unittest.TestCase):
 
         self.lde_2.insertar(250, posicion)
         self.n_elementos += 1
-        self.assertEqual(self.lde_2.tamanio, self.n_elementos)
+        self.assertEqual(self.lde_2._longitud, self.n_elementos)
 
         contador = 0
         nodo_actual = self.lde_2.cabeza
