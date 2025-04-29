@@ -2,7 +2,7 @@
 import time
 import random
 import matplotlib.pyplot as pyplo   #es el modulo principal de la libreria matplotlib, este nos permite crear graficos
-
+ #mover todo a modulos
 
 
 def ordenamiento_burbuja(lista):           
@@ -74,9 +74,9 @@ def ordenamiento_por_residuos(lista):
 #A PARTIR DE ACA VOY A RESOLVER LA ACTIVIDAD 2
 
 def medir_tiempo(algoritmo, lista):
-    tiempo_inicial = time.time()            #aca establecemos el tiempo en t=0
+    tiempo_inicial = time.perf_counter()        #aca establecemos el tiempo en t=0
     algoritmo(lista)                        #aca llamamos al algoritmo en cuestion al que queremos tomarle el tiempo y le enviamos la lista
-    tiempo_final = time.time()              #aca dejamos de correr el tiempo, ya que la funcion ya actuo
+    tiempo_final = time.perf_counter()             #aca dejamos de correr el tiempo, ya que la funcion ya actuo
     tiempo_transcurrido = tiempo_final-tiempo_inicial
     return tiempo_transcurrido              #finalmente, nos devuelve el tiempo que tardo en total
 
@@ -98,6 +98,7 @@ if __name__ == "__main__":
 
     #y ahora si voy a hacer las pruebas de velocidad:
     tamaños_listas = [10, 100, 200, 500, 700, 1000]   #estos son los tamaños de lista que queremos medir, listas con 1, 10, 100, 500 y 1000 elementos
+    #tamaños_listas = range(1, 1001, 10)
     tiempos_ordenamiento_burbuja = []   
     tiempos_ordenamiento_quicksort = []         #en estas tres listas almacenamos los tiempos corres´pondientes a cada uno de los tamaños (es decir que las listas van a tener 5 elementos c/u)
     tiempos_ordenamiento_radixsort = []
@@ -105,8 +106,7 @@ if __name__ == "__main__":
 
 
     for tamaño in tamaños_listas:                                                       #aca, lo que el for hace es basicamente hacer que el proceso de medir el tiempo se repita la misma cantidad de veces que elementos hay en la lista
-        lista_aleatoria = [random.randint(10000, 100000) for j in range(tamaño)]        #creamos la lista aleatoria en base a el tamaño que en ese momento toque. cuando tamaño=1 se repetira 1 vez, cuando sea 10 se repetira 10 veces y asi sucesivamente
-        
+        lista_aleatoria = [random.randint(10000, 100000) for j in range(tamaño)]        #creamos la lista aleatoria en base a el tamaño que en ese momento toque. cuando tamaño=1 se repetira 1 vez, cuando sea 10 se repetira 10 veces y asi sucesivamente  
         tiempos_ordenamiento_burbuja.append(medir_tiempo(ordenamiento_burbuja, lista_aleatoria)) 
         tiempos_ordenamiento_quicksort.append(medir_tiempo(ordenamiento_quicksort, lista_aleatoria))    #le mandamos la misma lista a los 3 metodos de ordenamiento, y calculamos cuanto tiempo demora cada uno
         tiempos_ordenamiento_radixsort.append(medir_tiempo(ordenamiento_por_residuos, lista_aleatoria))
