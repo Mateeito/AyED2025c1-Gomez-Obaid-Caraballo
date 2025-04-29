@@ -4,7 +4,7 @@ Created on Thu Sep  1 14:00:21 2022
 @author: Catedra de Algoritmos y Estructura de Datos
 """
 
-from modules.modulo1 import ListaDobleEnlazada
+from modules.LDE import ListaDobleEnlazada
 import unittest
 import random
 
@@ -163,7 +163,7 @@ class Test_LDE(unittest.TestCase):
 
         self.lde_2.insertar(250, posicion)
         self.n_elementos += 1
-        self.assertEqual(self.lde_2._longitud, self.n_elementos)
+        self.assertEqual(self.lde_2._tamanio, self.n_elementos)
 
         contador = 0
         nodo_actual = self.lde_2.cabeza
@@ -210,7 +210,7 @@ class Test_LDE(unittest.TestCase):
         # Extraer al final usando parámetro
         self.assertEqual(self.lde_3.extraer(len(self.lde_3) - 1), self.lista_aux_3.pop(),
                          "No se extrajo correctamente los elementos de la lista")
-        self.assertEqual(self.lde_3.tamanio, self.n_elementos - 3,
+        self.assertEqual(self.lde_3._tamanio, self.n_elementos - 3,
                          "No se actualizo debidamente el tamaño de la lista luego de extraer")
         # Verificamos que la lista este correctamente enlazada
         self.recorrer_lista(self.lde_3)
@@ -218,7 +218,7 @@ class Test_LDE(unittest.TestCase):
         # Extraer al final parámetro -1
         self.assertEqual(self.lde_3.extraer(-1), self.lista_aux_3.pop(),
                          "No se extrajo correctamente los elementos de la lista")
-        self.assertEqual(self.lde_3.tamanio, self.n_elementos - 4,
+        self.assertEqual(self.lde_3._tamanio, self.n_elementos - 4,
                          "No se actualizo debidamente el tamaño de la lista luego de extraer")
         # Verificamos que la lista este correctamente enlazada
         self.recorrer_lista(self.lde_3)
@@ -449,7 +449,7 @@ class Test_LDE(unittest.TestCase):
                              "No coinciden los nodos de la lista 2 con la lista concatenada")
             nodo_original = nodo_original.siguiente
             nodo_concat = nodo_concat.siguiente
-
+    
 
 if __name__ == "__main__":
     unittest.main()

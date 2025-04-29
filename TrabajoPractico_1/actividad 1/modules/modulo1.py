@@ -1,3 +1,4 @@
+
 import time
 import random
 import matplotlib.pyplot as pyplo   #es el modulo principal de la libreria matplotlib, este nos permite crear graficos

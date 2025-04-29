@@ -1,7 +1,3 @@
-import time
-import matplotlib.pyplot as pyplo
-
-
 
 class Nodo:
     def __init__(self, dato):       #consideremos que, inicialmente, para crear un nodo solo nececitamos saber el valor del propio nodo (el dato)
@@ -32,13 +28,13 @@ class ListaDobleEnlazada:
     def __init__(self):
         self.cabeza = None
         self.cola = None
-        self._longitud = 0                                  #ya que, al ser creada iniciamente la lista, esta no posee ninguna longitud ya que aun no posee elementos dentro de ella. Ademas hacemos que sea un atributo privado "_"
+        self._tamanio = 0                                  #ya que, al ser creada iniciamente la lista, esta no posee ninguna longitud ya que aun no posee elementos dentro de ella. Ademas hacemos que sea un atributo privado "_"
   
     def esta_vacia(self):
-        return self._longitud == 0                          #lo que hace esta linea es revisar si el atributo longitud es igual a 0, en caso de que este vacia retorna true 
+        return self._tamanio == 0                          #lo que hace esta linea es revisar si el atributo longitud es igual a 0, en caso de que este vacia retorna true 
 
     def __len__(self):
-        return self._longitud                               #devuelve la longitud de la lista
+        return self._tamanio                               #devuelve la longitud de la lista
 
     def agregar_al_inicio(self, item):                      #esta funcion coloca el nuevo valor al inicio (cabeza) de la lista
         nodo_a_agregar = Nodo(item)                         #cuando llamamos a la funcion debemos pasarle el valor que queremos que tenga ese nuevo nodo (que en este caso seria el item) y luego creamos un nodo con la clase Nodo. Es decir que si mandamos agregar_al_inicio(8) va a agregar el numero 8 al inicio de la lista
@@ -51,7 +47,7 @@ class ListaDobleEnlazada:
             self.cabeza.anterior = nodo_a_agregar           #ahora que la cabeza ya no es mas la cabeza y tiene un nodo anterior (que antes no tenia), tenemos que hacer que el valor anterior de la cabeza (cabeza.anterior) tenga su puntero anterior apuntando hacia la nueva cabeza (nodo_a_agregar)
             self.cabeza = nodo_a_agregar                    #ahora si, hacemos que la nueva cabeza de la lista sea nodo_a_agregar
         
-        self._longitud += 1                                 #por ultimo, ya que agregamos un nuevo nodo a la lista, la longitud de la lista incrementa en 1
+        self._tamanio += 1                                 #por ultimo, ya que agregamos un nuevo nodo a la lista, la longitud de la lista incrementa en 1
 
     def agregar_al_final(self, item):                       #el proceso es parecido a la funcion anterior, pero ahora lo hacemos colocando el nodo en la cola en lugar de en la cabeza
         nodo_a_agregar = Nodo(item)
@@ -63,11 +59,11 @@ class ListaDobleEnlazada:
             self.cola.siguiente = nodo_a_agregar
             self.cola = nodo_a_agregar
         
-        self._longitud += 1
+        self._tamanio += 1
 
     def insertar(self, item, posicion=None):                #pasamos como argumento el nodo (item) a insertar, y la posicion en la que queremos insertarlo
        
-        if posicion is None or posicion == self._longitud:  #esta linea nos dice que, si no se pasa la posicion como argumento (None) o si la posicion corresponde a la longitud total de la lista (es decir al final de la lista) entonces:
+        if posicion is None or posicion == self._tamanio:  #esta linea nos dice que, si no se pasa la posicion como argumento (None) o si la posicion corresponde a la longitud total de la lista (es decir al final de la lista) entonces:
             self.agregar_al_final(item)                     #agregamos el nodo al final y listo, y para esto ya tenemos una funcion que hace el trabajo por nosotros
             return                                          #el return hace que la funcion insertar termine
         
@@ -75,7 +71,7 @@ class ListaDobleEnlazada:
             self.agregar_al_inicio(item)
             return                                              
         
-        if posicion < 0 or posicion > self._longitud:         #si la posicion es un numero negativo o la posicion es mas grande que la propia lista, entonces que nos de un error
+        if posicion < 0 or posicion > self._tamanio:         #si la posicion es un numero negativo o la posicion es mas grande que la propia lista, entonces que nos de un error
             raise IndexError("Posicion NO Valida (fuera de rango)")
         
         #en caso de que no se cumpla ninguno de los anteriores if:
@@ -98,7 +94,7 @@ class ListaDobleEnlazada:
             nodo_a_agregar.anterior = anterior
             nodo_a_agregar.siguiente = actual
             actual.anterior = nodo_a_agregar
-        self._longitud +=1
+        self._tamanio +=1
 
 #A la hora de extraer un dato tenemos 3 posibilidades, que nos pidan el primer elemento (cabeza), que nos pidan el ultimo elemento (cola) o que nos pidan un elemento entre medio de esos dos
 
@@ -109,34 +105,37 @@ class ListaDobleEnlazada:
             raise IndexError("No hay nada que extraer, la lista esta vacia")
         
         if posicion is None:
-            posicion = self._longitud - 1
+            posicion = self._tamanio - 1
 
-        if posicion < 0 or posicion >= self._longitud:
+        if posicion == -1:
+            posicion = self._tamanio - 1
+            
+        if posicion < -1 or posicion >= self._tamanio:
             raise IndexError("Posición inválida")
         
         
         #que nos pidan el ultimo elemento
-        if posicion == self._longitud-1:            #ya que en caso de que no nos den la posicion tenemos que devolver el ultimo elemento (cola) de la lista, podemos: 
+        if posicion == self._tamanio-1:            #ya que en caso de que no nos den la posicion tenemos que devolver el ultimo elemento (cola) de la lista, podemos: 
             dato = self.cola.dato                                       #extraemos el dato en la posicion que nos piden (en este caso la final (cola)) para retornarlo al final
-            if self._longitud == 1:                                     #en caso de que el tamaño de la lista conste de un unico elemento:
+            if self._tamanio == 1:                                     #en caso de que el tamaño de la lista conste de un unico elemento:
                 self.cabeza = self.cola = None                          #que toda la lista quede vacia
             else:
                 self.cola = self.cola.anterior                          #en caso de que la lista tenga mas de 1 elemento, que la nueva cola sea el elemento anterior a la antigua cola
                 self.cola.siguiente = None
                 
-            self._longitud -= 1
+            self._tamanio -= 1
             return dato
         
         #que nos pidan el primer elemento
         if posicion == 0:
             dato = self.cabeza.dato
 
-            if self._longitud == 1:                                     #mismo proceso que en el caso de arriba
+            if self._tamanio == 1:                                     #mismo proceso que en el caso de arriba
                 self.cabeza = self.cola = None
             else:
                 self.cabeza = self.cabeza.siguiente
                 self.cabeza.anterior = None
-            self._longitud -= 1
+            self._tamanio -= 1
             return dato
         
         #que nos pidan un elemento entre medio de esos dos
@@ -147,7 +146,7 @@ class ListaDobleEnlazada:
         
         actual.anterior.siguiente = actual.siguiente            #hacemos que A --> D
         actual.siguiente.anterior = actual.anterior             #hacemos que A <-- D
-        self._longitud -= 1             
+        self._tamanio -= 1             
         return actual.dato                                      #retornamos B
    
     def copiar(self):
@@ -180,36 +179,54 @@ class ListaDobleEnlazada:
         nueva_lista.concatenar(otra_lista)      #a esa copia, le sumamos al final la otra lista
         return nueva_lista                      #retornamos la lista
 
+    def __iter__(self):
+        actual = self.cabeza
+        while actual is not None:
+            yield actual.dato
+            actual = actual.siguiente
 
+if __name__ == "__main__":
 
+    lista_prueba = ListaDobleEnlazada()
+    for i in range(10):
+        lista_prueba.agregar_al_final(i)
 
+    for i in lista_prueba:
+        print(i)
+
+    print("Numero Extraido", lista_prueba.extraer(-1))
+    for i in lista_prueba:
+        print(i)
+
+'''
 #a partir de aca medimos los tiempos de ejecucion 
-def medir_tiempo(func, *args):
-    inicio = time.time()                #establece el inicio del tiempo t=0
-    func(*args)                         #ejecuta la funcion que se le pase como argumento
-    return time.time() - inicio         #
+    def medir_tiempo(func, *args):
+        inicio = time.perf_counter()                #establece el inicio del tiempo t=0
+        func(*args)                                 #ejecuta la funcion que se le pase como argumento
+        return time.perf_counter() - inicio         #
 
-n_valores = list(range(100, 2100, 50))  #genera una lista de enteros que empieza en 100, llega hasta el numero 2100 (sin incluirlo) y aumenta de a 200
-tiempos_len = []                        #crea una lista para guardar los diferentes tiempos de la funcion len
-tiempos_copiar = []
-tiempos_invertir = []
+    n_valores = list(range(100, 2100, 200)) 
+    tiempos_len = []
+    tiempos_copiar = []
+    tiempos_invertir = []
 
-for n in n_valores:
-    lista = ListaDobleEnlazada()
-    for i in range(n):
-        lista.agregar_al_final(i)
+    for n in n_valores:
+        lista = ListaDobleEnlazada()
+        for i in range(n):
+            lista.agregar_al_final(i)
 
-    tiempos_len.append(medir_tiempo(len, lista))
-    tiempos_copiar.append(medir_tiempo(lista.copiar))
-    tiempos_invertir.append(medir_tiempo(lista.invertir))
+        tiempos_len.append(medir_tiempo(len, lista))
+        tiempos_copiar.append(medir_tiempo(lista.copiar))
+        tiempos_invertir.append(medir_tiempo(lista.invertir))
 
-# Graficar resultados
-pyplo.plot(n_valores, tiempos_len, label='len()')               
-pyplo.plot(n_valores, tiempos_copiar, label='copiar()')
-pyplo.plot(n_valores, tiempos_invertir, label='invertir()')
-pyplo.xlabel('Cantidad de elementos (N)')
-pyplo.ylabel('Tiempo de ejecución (s)')
-pyplo.title('Rendimiento de ListaDobleEnlazada')
-pyplo.legend()
-pyplo.grid(True)
-pyplo.show()
+    # Graficar resultados
+    pyplo.plot(n_valores, tiempos_len, label='len()')               
+    pyplo.plot(n_valores, tiempos_copiar, label='copiar()')
+    pyplo.plot(n_valores, tiempos_invertir, label='invertir()')
+    pyplo.xlabel('Cantidad de elementos (N)')
+    pyplo.ylabel('Tiempo de ejecución (s)')
+    pyplo.title('Rendimiento de ListaDobleEnlazada')
+    pyplo.legend()
+    pyplo.grid(True)
+    pyplo.show()
+'''
