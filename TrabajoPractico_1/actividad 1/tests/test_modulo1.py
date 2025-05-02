@@ -1,4 +1,7 @@
-from modules.modulo1 import ordenamiento_burbuja, ordenamiento_quicksort, ordenamiento_por_residuos #para que me deje probar las funciones de ordenamiento
+
+from modules.ordenamiento_burbuja import ordenamiento_burbuja
+from modules.ordenamiento_quicksort import ordenamiento_quicksort
+from modules.ordenamiento_por_residuos import ordenamiento_por_residuos
 import random           #para que me deje crear numeros aleatorios
 import unittest
 

@@ -1,40 +1,3 @@
-
-import time
-import random
-import matplotlib.pyplot as pyplo   #es el modulo principal de la libreria matplotlib, este nos permite crear graficos
- #mover todo a modulos
-
-
-def ordenamiento_burbuja(lista):           
-    n = len(lista)                        
-    
-    for i in range(n):                                    
-        for j in range(0, n-i-1):                        
-            if lista[j] > lista[j+1]:
-                num_auxiliar = lista[j]                   
-                lista[j] = lista[j+1]
-                lista [j+1] = num_auxiliar     
-    return lista
-
-def ordenamiento_quicksort(lista):
-    if len(lista) <= 1: 
-        return lista
-    else:
-        pivote = lista[len(lista)-1] 
-        lista_derecha = [] 
-        lista_izquierda = [] 
-        lista_numero_igual_que_el_pivote = []
-    
-        for i in lista: 
-            if i < pivote:
-                lista_izquierda.append(i) 
-            elif i == pivote:
-                lista_numero_igual_que_el_pivote.append(i)
-            else:
-                lista_derecha.append(i)
-    return ordenamiento_quicksort(lista_izquierda) + lista_numero_igual_que_el_pivote + ordenamiento_quicksort(lista_derecha)
-    
-
 def counting_sort(lista, exponente_actual):             # el exponente_acutal es el que nos dice con que digito de cada uno de los numeros estamos trabajando
     lista_auxiliar = [0] * len(lista)                   # La lista_auxiliar es una lista que posee la misma longitud que la lista original (si la lista tiene 23 elementos, esta posee 23 elementos tambien). Esta lista nos sirve para llevar el ordenamiento de la lista digito por digito a medida que avanzamos sin modificar la lista original
     lista_conteo = [0] * 10                             # Esta lista tiene 10 espacios ya que los valores de los numeros que nos pueden aparecer en cada digito van de 0-9. se encarga de contar la cantidad de veces que aparece cada digito, sumando 1 en el valor de su casilla por cada vez que aparece
@@ -71,58 +34,8 @@ def ordenamiento_por_residuos(lista):
         exponente *= 10                         # Multiplica el exponente por 10 despues de cada llamada a la funcion counting_sort
     return lista
 
-#A PARTIR DE ACA VOY A RESOLVER LA ACTIVIDAD 2
-
-def medir_tiempo(algoritmo, lista):
-    tiempo_inicial = time.perf_counter()        #aca establecemos el tiempo en t=0
-    algoritmo(lista)                        #aca llamamos al algoritmo en cuestion al que queremos tomarle el tiempo y le enviamos la lista
-    tiempo_final = time.perf_counter()             #aca dejamos de correr el tiempo, ya que la funcion ya actuo
-    tiempo_transcurrido = tiempo_final-tiempo_inicial
-    return tiempo_transcurrido              #finalmente, nos devuelve el tiempo que tardo en total
-
-
-
 if __name__ == "__main__":
-    #primero voy a hacer un par de pruebas de las funciones
-    lista1 = [1, 112, 8, 100, 434, 23, 86, 13]
-    lista1_ordenada = ordenamiento_burbuja(lista1)
-    print(lista1_ordenada)
-
-    lista2 = [1, 3, 5, 45, 29849, 187, 3, 170, 44, 18821, 86, 13, 13, 892]
-    lista2_ordenada = ordenamiento_quicksort(lista2)
-    print(lista2_ordenada)
-
+    
     lista3 = [1, 82, 5, 7127, 249, 17, 34, 127, 44, 1821, 86, 1187, 13, 82, 88, 44]
     lista3_ordenada = ordenamiento_por_residuos(lista3)
     print(lista3_ordenada)
-
-    #y ahora si voy a hacer las pruebas de velocidad:
-    tamaños_listas = [10, 100, 200, 500, 700, 1000]   #estos son los tamaños de lista que queremos medir, listas con 1, 10, 100, 500 y 1000 elementos
-    #tamaños_listas = range(1, 1001, 10)
-    tiempos_ordenamiento_burbuja = []   
-    tiempos_ordenamiento_quicksort = []         #en estas tres listas almacenamos los tiempos corres´pondientes a cada uno de los tamaños (es decir que las listas van a tener 5 elementos c/u)
-    tiempos_ordenamiento_radixsort = []
-    tiempos_ordenamiento_sorted = []
-
-
-    for tamaño in tamaños_listas:                                                       #aca, lo que el for hace es basicamente hacer que el proceso de medir el tiempo se repita la misma cantidad de veces que elementos hay en la lista
-        lista_aleatoria = [random.randint(10000, 100000) for j in range(tamaño)]        #creamos la lista aleatoria en base a el tamaño que en ese momento toque. cuando tamaño=1 se repetira 1 vez, cuando sea 10 se repetira 10 veces y asi sucesivamente  
-        tiempos_ordenamiento_burbuja.append(medir_tiempo(ordenamiento_burbuja, lista_aleatoria)) 
-        tiempos_ordenamiento_quicksort.append(medir_tiempo(ordenamiento_quicksort, lista_aleatoria))    #le mandamos la misma lista a los 3 metodos de ordenamiento, y calculamos cuanto tiempo demora cada uno
-        tiempos_ordenamiento_radixsort.append(medir_tiempo(ordenamiento_por_residuos, lista_aleatoria))
-        tiempos_ordenamiento_sorted.append(medir_tiempo(sorted, lista_aleatoria))
-    #ahora, ya se guardan los tiempos en las 3 listas, pero falta graficarlo:
-
-    pyplo.figure(figsize=(10,8)) #crea un lienzo de 10 unidade de ancho por 8 unidades de alto
-
-    pyplo.plot(tamaños_listas, tiempos_ordenamiento_burbuja, label='Burbuja', color='blue', marker='o') #dibuja una linea con los valores de tamaños_lista en el eje x / dibuja una linea con los tiempos de ejecucion
-    pyplo.plot(tamaños_listas, tiempos_ordenamiento_quicksort, label='Quicksort', color='red', marker='o')
-    pyplo.plot(tamaños_listas, tiempos_ordenamiento_radixsort, label='Radix Sort', color='green', marker='o')
-    pyplo.plot(tamaños_listas, tiempos_ordenamiento_sorted, label='Sorted', color='black', marker='o')
-
-
-    pyplo.xlabel('Tamaño de la lista')      #agrega una etiqueta por debajo del eje x que dice "Tamaño de la lista"
-    pyplo.ylabel('Tiempo de ejecucion (s)') 
-    pyplo.legend()
-    pyplo.grid(True)                        #pone una cuadricula en el fondo
-    pyplo.show()                            #esto es lo que hace que el grafico se muestre en pantalla
