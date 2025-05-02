@@ -163,11 +163,7 @@ class Test_LDE(unittest.TestCase):
 
         self.lde_2.insertar(250, posicion)
         self.n_elementos += 1
-<<<<<<< HEAD
-        self.assertEqual(self.lde_2._longitud, self.n_elementos)
-=======
         self.assertEqual(self.lde_2._tamanio, self.n_elementos)
->>>>>>> b72a03ac27152508d39426349f1674285db12b8b
 
         contador = 0
         nodo_actual = self.lde_2.cabeza
@@ -214,11 +210,7 @@ class Test_LDE(unittest.TestCase):
         # Extraer al final usando parámetro
         self.assertEqual(self.lde_3.extraer(len(self.lde_3) - 1), self.lista_aux_3.pop(),
                          "No se extrajo correctamente los elementos de la lista")
-<<<<<<< HEAD
-        self.assertEqual(self.lde_3._longitud, self.n_elementos - 3,
-=======
         self.assertEqual(self.lde_3._tamanio, self.n_elementos - 3,
->>>>>>> b72a03ac27152508d39426349f1674285db12b8b
                          "No se actualizo debidamente el tamaño de la lista luego de extraer")
         # Verificamos que la lista este correctamente enlazada
         self.recorrer_lista(self.lde_3)
@@ -226,11 +218,7 @@ class Test_LDE(unittest.TestCase):
         # Extraer al final parámetro -1
         self.assertEqual(self.lde_3.extraer(-1), self.lista_aux_3.pop(),
                          "No se extrajo correctamente los elementos de la lista")
-<<<<<<< HEAD
-        self.assertEqual(self.lde_3._longitud, self.n_elementos - 4,
-=======
         self.assertEqual(self.lde_3._tamanio, self.n_elementos - 4,
->>>>>>> b72a03ac27152508d39426349f1674285db12b8b
                          "No se actualizo debidamente el tamaño de la lista luego de extraer")
         # Verificamos que la lista este correctamente enlazada
         self.recorrer_lista(self.lde_3)
