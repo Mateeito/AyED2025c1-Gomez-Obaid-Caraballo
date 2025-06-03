@@ -1,128 +1,137 @@
 from datetime import datetime
-from modules.nodo_avl import NodoAVL
 
-
+class Nodo:
+    def __init__(self, fecha, temperatura):
+        self.fecha = datetime.strptime(fecha, "%d/%m/%Y")
+        self.temperatura = temperatura
+        self.izquierda = None
+        self.derecha = None
+        self.altura = 1
 
 class Temperaturas_DB:
     def __init__(self):
-        self.raiz = None    
-        self._cantidad = 0  
-    
-        
-    def _altura(self, nodo):    
-        if not nodo:        
-            return 0            
-        else:
-            return nodo.altura  
+        self.raiz = None
 
 
-    def _balance(self, nodo):   
-        if not nodo:            
-            return 0
-        else:
-            balance = self._altura(nodo.izquierda) - self._altura(nodo.derecha)
-            return balance
-   
-    
-    def _rotar_derecha(self, nodo):     
-        nodo_iz = nodo.izquierda              
-        subarbol_auxiliar = nodo_iz.derecha                  
+    def _parsear_fecha(self, fecha_str):
+        """Convierte un string en formato dd/mm/yyyy a un objeto datetime."""
+        try:
+            return datetime.strptime(fecha_str, "%d/%m/%Y")
+        except ValueError:
+            raise ValueError(f"Fecha inválida: {fecha_str}. Usar formato dd/mm/yyyy.")
 
-        nodo_iz.derecha = nodo               
-        nodo.izquierda = subarbol_auxiliar             
+    def _altura(self, nodo):
+        return nodo.altura if nodo else 0
 
+    def _balance(self, nodo):
+        return self._altura(nodo.izquierda) - self._altura(nodo.derecha) if nodo else 0
+
+    def _actualizar_altura(self, nodo):
         nodo.altura = max(self._altura(nodo.izquierda), self._altura(nodo.derecha)) + 1
-        nodo_iz.altura = max(self._altura(nodo_iz.izquierda), self._altura(nodo_iz.derecha)) + 1
-        return nodo_iz
 
-    def _rotar_izquierda(self, nodo):   
-        nodo_der = nodo.derecha                
-        subarbol_auxiliar= nodo_der.izquierda              
+    def _rotar_derecha(self, nodo):
+        """Rotación simple derecha."""
+        nueva_raiz = nodo.izquierda
+        nodo.izquierda = nueva_raiz.derecha
+        nueva_raiz.derecha = nodo
+        self._actualizar_altura(nodo)
+        self._actualizar_altura(nueva_raiz)
+        return nueva_raiz
 
-        nodo_der.izquierda = nodo              
-        nodo.derecha = subarbol_auxiliar
+    def _rotar_izquierda(self, nodo):
+        """Rotación simple izquierda."""
+        nueva_raiz = nodo.derecha
+        nodo.derecha = nueva_raiz.izquierda
+        nueva_raiz.izquierda = nodo
+        self._actualizar_altura(nodo)
+        self._actualizar_altura(nueva_raiz)
+        return nueva_raiz
 
-        nodo.altura = max(self._altura(nodo.izquierda), self._altura(nodo.derecha)) + 1
-        nodo_der.altura = max(self._altura(nodo_der.izquierda), self._altura(nodo_der.derecha)) + 1
-        return nodo_der
-
-    def _insertar(self, nodo, fecha, temperatura):
-        if not nodo:
-            self._cantidad += 1
-            return NodoAVL(fecha, temperatura)
-
-        if fecha < nodo.fecha:
-            nodo.izquierda = self._insertar(nodo.izquierda, fecha, temperatura)
-        elif fecha > nodo.fecha:
-            nodo.derecha = self._insertar(nodo.derecha, fecha, temperatura)
-        else:
-            nodo.temperatura = temperatura 
-            return nodo
-
-        nodo.altura = max(self._altura(nodo.izquierda), self._altura(nodo.derecha)) + 1
+    def _balancear(self, nodo):
+        """Realiza las rotaciones necesarias para balancear el árbol."""
+        self._actualizar_altura(nodo)
         balance = self._balance(nodo)
 
-    
-        if balance > 1 and fecha < nodo.izquierda.fecha:
+        if balance > 1:
+            if self._balance(nodo.izquierda) < 0:
+                nodo.izquierda = self._rotar_izquierda(nodo.izquierda)
             return self._rotar_derecha(nodo)
-        if balance < -1 and fecha > nodo.derecha.fecha:
-            return self._rotar_izquierda(nodo)
-        if balance > 1 and fecha > nodo.izquierda.fecha:
-            nodo.izquierda = self._rotar_izquierda(nodo.izquierda)
-            return self._rotar_derecha(nodo)
-        if balance < -1 and fecha < nodo.derecha.fecha:
-            nodo.derecha = self._rotar_derecha(nodo.derecha)
+        elif balance < -1:
+            if self._balance(nodo.derecha) > 0:
+                nodo.derecha = self._rotar_derecha(nodo.derecha)
             return self._rotar_izquierda(nodo)
 
         return nodo
 
 
-    def _eliminar(self, nodo, fecha):
+    def _insertar(self, nodo, fecha, temperatura):
+        fecha_dt = self._parsear_fecha(fecha)
+
         if not nodo:
+            return Nodo(fecha, temperatura)
+
+        if fecha_dt < nodo.fecha:
+            nodo.izquierda = self._insertar(nodo.izquierda, fecha, temperatura)
+        elif fecha_dt > nodo.fecha:
+            nodo.derecha = self._insertar(nodo.derecha, fecha, temperatura)
+        else:
+            nodo.temperatura = temperatura
             return nodo
 
-        if fecha < nodo.fecha:
+        return self._balancear(nodo)
+
+    def agregar_temperatura(self, fecha, temperatura):
+        """Agrega o actualiza la temperatura de una fecha."""
+        self.raiz = self._insertar(self.raiz, fecha, temperatura)
+
+    def _min_valor_nodo(self, nodo):
+        actual = nodo
+        while actual.izquierda:
+            actual = actual.izquierda
+        return actual
+
+    def _eliminar(self, nodo, fecha):
+        fecha_dt = self._parsear_fecha(fecha)
+
+        if not nodo:
+            raise KeyError(f"No existe una entrada para la fecha: {fecha}")
+
+        if fecha_dt < nodo.fecha:
             nodo.izquierda = self._eliminar(nodo.izquierda, fecha)
-        elif fecha > nodo.fecha:
+        elif fecha_dt > nodo.fecha:
             nodo.derecha = self._eliminar(nodo.derecha, fecha)
         else:
-            self._cantidad -= 1
             if not nodo.izquierda:
                 return nodo.derecha
             elif not nodo.derecha:
                 return nodo.izquierda
 
-            temp = self._min_nodo(nodo.derecha)
+            temp = self._min_valor_nodo(nodo.derecha)
             nodo.fecha = temp.fecha
             nodo.temperatura = temp.temperatura
-            nodo.derecha = self._eliminar(nodo.derecha, temp.fecha)
+            nodo.derecha = self._eliminar(nodo.derecha, temp.fecha.strftime("%d/%m/%Y"))
 
-        nodo.altura = max(self._altura(nodo.izquierda), self._altura(nodo.derecha)) + 1
-        balance = self._balance(nodo)
+        return self._balancear(nodo)
 
-        if balance > 1 and self._balance(nodo.izquierda) >= 0:
-            return self._rotar_derecha(nodo)
-        if balance > 1 and self._balance(nodo.izquierda) < 0:
-            nodo.izquierda = self._rotar_izquierda(nodo.izquierda)
-            return self._rotar_derecha(nodo)
-        if balance < -1 and self._balance(nodo.derecha) <= 0:
-            return self._rotar_izquierda(nodo)
-        if balance < -1 and self._balance(nodo.derecha) > 0:
-            nodo.derecha = self._rotar_derecha(nodo.derecha)
-            return self._rotar_izquierda(nodo)
-
-        return nodo
-
+    def borrar_temperatura(self, fecha):
+        """Elimina la temperatura asociada a una fecha."""
+        self.raiz = self._eliminar(self.raiz, fecha)
 
     def _buscar(self, nodo, fecha):
+        fecha_dt = self._parsear_fecha(fecha)
         if not nodo:
             return None
-        if fecha < nodo.fecha:
+        if fecha_dt < nodo.fecha:
             return self._buscar(nodo.izquierda, fecha)
-        elif fecha > nodo.fecha:
+        elif fecha_dt > nodo.fecha:
             return self._buscar(nodo.derecha, fecha)
         else:
             return nodo.temperatura
+
+    def devolver_temperatura(self, fecha):
+        """Devuelve la temperatura registrada en una fecha específica."""
+        temp = self._buscar(self.raiz, fecha)
+        return temp if temp is not None else "Fecha no encontrada"
 
     def _en_rango(self, nodo, fecha1, fecha2, resultado):
         if not nodo:
@@ -130,142 +139,57 @@ class Temperaturas_DB:
         if fecha1 < nodo.fecha:
             self._en_rango(nodo.izquierda, fecha1, fecha2, resultado)
         if fecha1 <= nodo.fecha <= fecha2:
-            resultado.append((nodo.fecha, nodo.temperatura))
-        if fecha2 > nodo.fecha:
+            resultado.append((nodo.fecha.strftime("%d/%m/%Y"), nodo.temperatura))
+        if nodo.fecha < fecha2:
             self._en_rango(nodo.derecha, fecha1, fecha2, resultado)
 
-    def _min_nodo(self, nodo):
-        actual = nodo
-        while actual.izquierda:
-            actual = actual.izquierda
-        return actual
-    
-
-    def devolver_temperatura(self, fecha_str):
-        fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
-        temp = self._buscar(self.raiz, fecha)
-        if temp is None:                    
-            raise ValueError("No se encontró temperatura para esa fecha")
-        else:
-            return temp
-
-    def guardar_temperatura(self, temperatura, fecha_str):
-        fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
-        self.raiz = self._insertar(self.raiz, fecha, temperatura)
-
-
-    def max_temp_rango(self, f1, f2):
-        fecha1 = datetime.strptime(f1, "%d/%m/%Y")
-        fecha2 = datetime.strptime(f2, "%d/%m/%Y")
+    def devolver_temperaturas(self, f1, f2):
+        """Devuelve todas las temperaturas entre dos fechas."""
+        fecha1 = self._parsear_fecha(f1)
+        fecha2 = self._parsear_fecha(f2)
         resultado = []
         self._en_rango(self.raiz, fecha1, fecha2, resultado)
-        if not resultado:
-            raise ValueError("No hay temperaturas en ese rango")
-        return max(t for _, t in resultado)
+        return resultado
 
     def min_temp_rango(self, f1, f2):
-        fecha1 = datetime.strptime(f1, "%d/%m/%Y")
-        fecha2 = datetime.strptime(f2, "%d/%m/%Y")
-        resultado = []
-        self._en_rango(self.raiz, fecha1, fecha2, resultado)
-        if not resultado:
-            raise ValueError("No hay temperaturas en ese rango")
-        return min(t for _, t in resultado)
+        """Devuelve la temperatura mínima entre dos fechas."""
+        temps = self.devolver_temperaturas(f1, f2)
+        return min(temps, key=lambda x: x[1]) if temps else None
 
-    def temp_extremos_rango(self, f1, f2):
-        fecha1 = datetime.strptime(f1, "%d/%m/%Y")
-        fecha2 = datetime.strptime(f2, "%d/%m/%Y")
-        resultado = []
-        self._en_rango(self.raiz, fecha1, fecha2, resultado)
-        if not resultado:
-            raise ValueError("No hay temperaturas en ese rango")
-        temperaturas = []
-        for fecha, temperatura in resultado:
-            temperaturas.append(temperatura)
-        return min(temperaturas), max(temperaturas)
-
-    def devolver_temperaturas(self, f1, f2):
-        fecha1 = datetime.strptime(f1, "%d/%m/%Y")
-        fecha2 = datetime.strptime(f2, "%d/%m/%Y")
-        resultado = []
-        self._en_rango(self.raiz, fecha1, fecha2, resultado)
-        resultado.sort() 
-        return [f"{fecha.strftime('%d/%m/%Y')}: {temp} ºC" for fecha, temp in resultado]
-
-    def borrar_temperatura(self, fecha_str):
-        fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
-        self.raiz = self._eliminar(self.raiz, fecha)
-
-    def cantidad_muestras(self):
-        return self._cantidad
-    
+    def max_temp_rango(self, f1, f2):
+        """Devuelve la temperatura máxima entre dos fechas."""
+        temps = self.devolver_temperaturas(f1, f2)
+        return max(temps, key=lambda x: x[1]) if temps else None
 
 if __name__ == "__main__":
+    db = Temperaturas_DB()
+    db.agregar_temperatura("01/06/2024", 22)
+    db.agregar_temperatura("02/06/2024", 24)
+    db.agregar_temperatura("03/06/2024", 18)
+    db.agregar_temperatura("04/06/2024", 20)
+    db.agregar_temperatura("05/06/2024", 26)
+    db.agregar_temperatura("06/06/2024", 19)
+    db.agregar_temperatura("07/06/2024", 21)
+    db.agregar_temperatura("08/06/2024", 25)
 
-    lista = Temperaturas_DB()
+    print("--- TEMPERATURA DEL 03/06/2024 ---")
+    print(db.devolver_temperatura("03/06/2024"))
 
-    lista.guardar_temperatura(25, "01/01/2023")
-    lista.guardar_temperatura(30, "15/01/2023")
-    lista.guardar_temperatura(22, "28/01/2023")
-    lista.guardar_temperatura(35, "01/02/2023")
-    lista.guardar_temperatura(20, "10/02/2023")
-    lista.guardar_temperatura(27, "15/02/2023")
-    lista.guardar_temperatura(32, "01/03/2023")
-    lista.guardar_temperatura(24, "10/03/2023")
-    lista.guardar_temperatura(29, "20/03/2023")
-    lista.guardar_temperatura(26, "31/03/2023")
-    
-# Función auxiliar para imprimir el contenido de la lista ordenado
-    def imprimir_lista_actual(lista):
-        temperaturas = lista.devolver_temperaturas("01/01/2023", "31/12/2023")
-        print("lista = [")
-        for t in temperaturas:
-            print(f"  {t}")
-        print("]")
+    print("\n--- RANGO 03/06 al 06/06 ---")
+    print(db.devolver_temperaturas("03/06/2024", "06/06/2024"))
 
-    print("\n--- ESTADO INICIAL DE LA LISTA ---")
-    imprimir_lista_actual(lista)
+    print("\n--- MÍNIMA EN RANGO ---")
+    print(db.min_temp_rango("03/06/2024", "06/06/2024"))
 
-    # Probar buscar temperatura
-    print("\n--- BUSCAR TEMPERATURA ---")
-    fecha = "15/01/2023"
-    temp = lista.devolver_temperatura(fecha)
-    print(f"Temperatura el {fecha}: {temp} ºC")
+    print("\n--- MÁXIMA EN RANGO ---")
+    print(db.max_temp_rango("03/06/2024", "06/06/2024"))
 
-    # Probar extremos
-    print("\n--- TEMPERATURAS EXTREMAS EN TODO EL RANGO ---")
-    extremos = lista.temp_extremos_rango("01/01/2023", "31/12/2023")
-    imprimir_lista_actual(lista)
-    print(f"temperaturas extremas (min, max): {extremos}")
+    print("\n--- BORRANDO 04/06/2024 ---")
+    db.borrar_temperatura("04/06/2024")
+    print(db.devolver_temperatura("04/06/2024"))
 
-    # Probar min_temp_rango
-    print("\n--- TEMPERATURA MÍNIMA ENTRE 01/02/2023 Y 20/03/2023 ---")
-    min_temp = lista.min_temp_rango("01/02/2023", "20/03/2023")
-    print(f"temperatura mínima: {min_temp} ºC")
-
-    # Probar max_temp_rango
-    print("\n--- TEMPERATURA MÁXIMA ENTRE 01/02/2023 Y 20/03/2023 ---")
-    max_temp = lista.max_temp_rango("01/02/2023", "20/03/2023")
-    print(f"temperatura máxima: {max_temp} ºC")
-
-    # Probar devolver_temperaturas
-    print("\n--- TEMPERATURAS ENTRE 01/02/2023 Y 15/03/2023 ---")
-    rango = lista.devolver_temperaturas("01/02/2023", "15/03/2023")
-    for r in rango:
-        print(r)
-
-    # Probar borrar temperatura
-    print("\n--- BORRAR TEMPERATURA DE 10/02/2023 ---")
-    lista.borrar_temperatura("10/02/2023")
-    imprimir_lista_actual(lista)
-
-    # Verificar que fue eliminada
-    print("\n--- BUSCAR TEMPERATURA DE 10/02/2023 (espera error) ---")
+    print("\n--- BORRANDO FECHA INEXISTENTE (05/05/2022) ---")
     try:
-        lista.devolver_temperatura("10/02/2023")
-    except ValueError as e:
+        db.borrar_temperatura("05/05/2022")
+    except KeyError as e:
         print(f"Error: {e}")
-
-    # Probar cantidad de muestras
-    print("\n--- CANTIDAD DE MUESTRAS ---")
-    print(f"Cantidad total de temperaturas almacenadas: {lista.cantidad_muestras()}")
