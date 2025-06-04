@@ -226,46 +226,46 @@ if __name__ == "__main__":
     print("\n--- ESTADO INICIAL DE LA LISTA ---")
     imprimir_lista_actual(lista)
 
-    # Probar buscar temperatura
+    #Probar buscar temperatura
     print("\n--- BUSCAR TEMPERATURA ---")
     fecha = "15/01/2023"
     temp = lista.devolver_temperatura(fecha)
     print(f"Temperatura el {fecha}: {temp} ºC")
 
-    # Probar extremos
+    #Probar extremos
     print("\n--- TEMPERATURAS EXTREMAS EN TODO EL RANGO ---")
     extremos = lista.temp_extremos_rango("01/01/2023", "31/12/2023")
     imprimir_lista_actual(lista)
     print(f"temperaturas extremas (min, max): {extremos}")
 
-    # Probar min_temp_rango
+    #Probar min_temp_rango
     print("\n--- TEMPERATURA MÍNIMA ENTRE 01/02/2023 Y 20/03/2023 ---")
     min_temp = lista.min_temp_rango("01/02/2023", "20/03/2023")
     print(f"temperatura mínima: {min_temp} ºC")
 
-    # Probar max_temp_rango
+    #Probar max_temp_rango
     print("\n--- TEMPERATURA MÁXIMA ENTRE 01/02/2023 Y 20/03/2023 ---")
     max_temp = lista.max_temp_rango("01/02/2023", "20/03/2023")
     print(f"temperatura máxima: {max_temp} ºC")
 
-    # Probar devolver_temperaturas
+    #Probar devolver_temperaturas
     print("\n--- TEMPERATURAS ENTRE 01/02/2023 Y 15/03/2023 ---")
     rango = lista.devolver_temperaturas("01/02/2023", "15/03/2023")
     for r in rango:
         print(r)
 
-    # Probar borrar temperatura
+    #Probar borrar temperatura
     print("\n--- BORRAR TEMPERATURA DE 10/02/2023 ---")
     lista.borrar_temperatura("10/02/2023")
     imprimir_lista_actual(lista)
 
-    # Verificar que fue eliminada
+    #Verificar que fue eliminada
     print("\n--- BUSCAR TEMPERATURA DE 10/02/2023 (espera error) ---")
     try:
         lista.devolver_temperatura("10/02/2023")
     except ValueError as e:
         print(f"Error: {e}")
 
-    # Probar cantidad de muestras
+    #Probar cantidad de muestras
     print("\n--- CANTIDAD DE MUESTRAS ---")
     print(f"Cantidad total de temperaturas almacenadas: {lista.cantidad_muestras()}")
