@@ -1,7 +1,8 @@
 from datetime import datetime
 from modules.nodo_avl import NodoAVL
 
-
+#Separar el arbol AVL de la base de datos
+#
 
 class Temperaturas_DB:
     def __init__(self):
